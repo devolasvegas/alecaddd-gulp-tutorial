@@ -11,6 +11,7 @@ var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
+var browserSync = require('browser-sync').create();
 
 var styleSRC = 'src/scss/style.scss';
 var styleDIST = './dist/css/';
@@ -22,6 +23,13 @@ var jsDIST = './dist/js/';
 var jswatch = 'src/js/**/*.js'
 var jsFILES = [jsSRC];
 
+gulp.task('browser-sync', function() {
+    browserSync.init({ 
+        server: {
+            baseDir: "./"
+        }
+     });
+});
 
 gulp.task('style', function() {
     gulp.src(styleSRC)
