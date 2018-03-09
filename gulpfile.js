@@ -12,6 +12,7 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 var browserSync = require('browser-sync').create();
+var reload = browserSync.reload;
 
 var styleSRC = 'src/scss/style.scss';
 var styleDIST = './dist/css/';
@@ -23,8 +24,13 @@ var jsDIST = './dist/js/';
 var jswatch = 'src/js/**/*.js'
 var jsFILES = [jsSRC];
 
+var htmlwatch = '**/*.html';
+var phpwatch = '**/*.php';
+
 gulp.task('browser-sync', function() {
     browserSync.init({ 
+        open: false,
+        injectChanges: true,
         server: {
             baseDir: "./"
         }
@@ -46,7 +52,8 @@ gulp.task('style', function() {
             } ))
         .pipe(rename( { suffix: '.min' } ))
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(styleDIST));
+        .pipe(gulp.dest(styleDIST))
+        .pipe(browserSync.stream());
 });
 
 gulp.task('js', function() {
@@ -65,6 +72,7 @@ gulp.task('js', function() {
         .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(jsDIST))
+        .pipe(browserSync.stream());
     });
 
     // browserify - include all modules
@@ -83,7 +91,9 @@ gulp.task('default', ['style', 'js'], function() {
     // Do other stuff.
 });
 
-gulp.task('watch', ['default'], function() {
+gulp.task('watch', ['default', 'browser-sync'], function() {
     gulp.watch(stylewatch, ['style']);
-    gulp.watch(jswatch, ['js']);
+    gulp.watch(jswatch, ['js', reload]);
+    gulp.watch(htmlwatch, reload);
+    gulp.watch(phpwatch, reload)
 });
